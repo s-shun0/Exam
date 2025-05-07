@@ -7,6 +7,7 @@
   <c:param name="content">
     <section class="me-4">
       <h2 class="h3 mb-3 fw-norma bg-secondary bg-opacity-10 py-2 px-4">成績参照</h2>
+
       <form action="TestListSubjectExecute.action" method="post">
        <label class="form-label">科目情報</label>
         <div class="row border mx-3 mb-3 py-2 align-items-center rounded" id="filter">
@@ -47,22 +48,53 @@
       </form>
 
 
-            <!-- 学生情報フォーム -->
+      <!-- 学生情報フォーム -->
       <form action="TestListStudentExecute.action" method="post" class="my-3">
-       	<label class="form-label me-2 mb-0">学生情報</label>
+        <label class="form-label me-2 mb-0">学生情報</label>
         <div class="d-flex align-items-center">
           <input type="text" name="student_no" class="form-control me-2" value="${student_no}" placeholder="学生番号を入力">
           <button class="btn btn-secondary" id="filter-button" name="button">検索</button>
         </div>
-
         <div class="mt-2 text-warning">${errors.get("f1") }</div>
       </form>
 
-
+      <!-- 結果表示 -->
       <c:choose>
-      <c:when test="${test.size() > 0 }">
-      </c:when>
+        <c:when test="${list.size() > 0}">
+          <div>氏名: ${student_name} (${student_no})</div>
+          <table class="table table-hover">
+            <tr>
+              <th>科目名</th>
+              <th>科目コード</th>
+              <th>回数</th>
+              <th>点数</th>
+            </tr>
+            <c:forEach var="student" items="${list}">
+              <tr>
+                <th>
+                  ${student.subjectName}
+                  <input type="hidden" name="ent_year" value="${student.subjectName}" />
+                </th>
+                <th>
+                  ${student.subjectCd}
+                  <input type="hidden" name="test.classcd" value="${student.subjectCd}" />
+                </th>
+                <th>
+                  ${student.num}
+                  <input type="hidden" name="test.num" value="${student.num}" />
+                </th>
+                <th>
+                  ${student.point}
+                  <input type="hidden" name="point" value="${student.point}" />
+                </th>
+              </tr>
+            </c:forEach>
+          </table>
+        </c:when>
+        <c:otherwise>
+          <div>検索の条件を指定してください</div>
+        </c:otherwise>
       </c:choose>
-      </section>
+    </section>
   </c:param>
 </c:import>
