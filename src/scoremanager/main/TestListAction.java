@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import bean.Subject;
 import bean.Teacher;
 import dao.ClassNumDao;
 import dao.SubjectDao;
@@ -24,7 +25,7 @@ public class TestListAction extends Action{
         List<String> clist = cNumDao.filter(teacher.getSchool());
         //教科一覧
         SubjectDao subject = new SubjectDao();
-        List<String> slist = subject.filter(teacher.getSchool());
+        List<Subject> slist = subject.filter(teacher.getSchool());
         //入学年度
         LocalDate todaysDate = LocalDate.now(); //現在の情報を取得
         int year = todaysDate.getYear();
@@ -33,7 +34,7 @@ public class TestListAction extends Action{
             entYearSet.add(i);
         }
         req.setAttribute("class_list", clist);
-        req.setAttribute("sbject_list", slist);
+        req.setAttribute("subject_list", slist);
         req.setAttribute("ent_year_set", entYearSet);
 
         req.getRequestDispatcher("test_list.jsp").forward(req, res);
