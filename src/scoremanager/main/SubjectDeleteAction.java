@@ -8,20 +8,16 @@ import bean.Teacher;
 import dao.SubjectDao;
 import tool.Action;
 
-public class SubjectDeleteExecuteAction extends Action {
+public class SubjectDeleteAction extends Action {
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
         String cd = req.getParameter("cd");
-
         Teacher teacher = (Teacher) req.getSession().getAttribute("user");
 
-        Subject subject = new Subject();
-        subject.setCd(cd);
-        subject.setSchool(teacher.getSchool());
-
         SubjectDao dao = new SubjectDao();
-        dao.delete(subject);
+        Subject subject = dao.get(cd, teacher.getSchool());
 
-        req.getRequestDispatcher("subject_delete_done.jsp").forward(req, res);
+        req.setAttribute("subject", subject);
+        req.getRequestDispatcher("subject_delete.jsp").forward(req, res);
     }
 }
