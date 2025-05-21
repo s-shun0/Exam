@@ -91,4 +91,71 @@ public class TeacherDao extends Dao {
 		}
 		return teacher;
 	}
+	// 全件取得（一覧表示用）
+	public List<Teacher> getAll() throws Exception {
+		List<Teacher> list = new ArrayList<>();
+
+		Connection connection = getConnection();
+		PreparedStatement statement = null;
+
+		try {
+			String sql = "SELECT * FROM teacher ORDER BY id";
+			statement = connection.prepareStatement(sql);
+			ResultSet rs = statement.executeQuery();
+
+			SchoolDao schoolDao = new SchoolDao();
+
+			while (rs.next()) {
+				Teacher teacher = new Teacher();
+				teacher.setId(rs.getString("id"));
+				teacher.setPassword(rs.getString("password"));
+				teacher.setName(rs.getString("name"));
+				teacher.setSchool(schoolDao.get(rs.getString("school_cd")));
+
+				list.add(teacher);
+			}
+		} finally {
+			if (statement != null) statement.close();
+			if (connection != null) connection.close();
+		}
+		return list;
+	}
+
+	// 教師情報の新規登録
+	public void insert(Teacher teacher) throws Exception {
+	    Connection connection = getConnection();
+	    PreparedStatement statement = null;
+
+	    try {
+	        String sql = "INSERT INTO teacher (id, password, name, school_cd) VALUES (?, ?, ?, ?)";
+	        statement = connection.prepareStatement(sql);
+	        statement.setString(1, teacher.getId());
+	        statement.setString(2, teacher.getPassword());
+	        statement.setString(3, teacher.getName());
+	        statement.setString(4, teacher.getSchool().getCd());
+
+	        statement.executeUpdate();
+	    } finally {
+	        if (statement != null) statement.close();
+	        if (connection != null) connection.close();
+	    }
+	}
+
+	// 更新
+    public void update(Teacher teacher) throws Exception {
+        Connection conn = getConnection();
+        PreparedStatement stmt = conn.prepareStatement(
+            "UPDATE teacher SET password = ?, name = ?, school_cd = ? WHERE id = ?"
+        );
+
+        stmt.setString(1, teacher.getPassword());
+        stmt.setString(2, teacher.getName());
+        stmt.setString(3, teacher.getSchool().getCd());
+        stmt.setString(4, teacher.getId());
+
+        stmt.executeUpdate();
+        stmt.close();
+        conn.close();
+    }
+
 }
