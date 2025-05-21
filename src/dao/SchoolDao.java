@@ -64,4 +64,41 @@ public class SchoolDao extends Dao {
 		}
 		return school;
 	}
+
+	/**
+	 * 全ての学校情報を取得する
+	 *
+	 * @return List<School> 学校リスト
+	 * @throws Exception
+	 */
+	public List<School> getAll() throws Exception {
+	    List<School> schools = new ArrayList<>();
+
+	    Connection connection = getConnection();
+	    PreparedStatement statement = null;
+	    ResultSet resultSet = null;
+
+	    try {
+	        String sql = "SELECT * FROM school ORDER BY cd";
+	        statement = connection.prepareStatement(sql);
+	        resultSet = statement.executeQuery();
+
+	        while (resultSet.next()) {
+	            School school = new School();
+	            school.setCd(resultSet.getString("cd"));
+	            school.setName(resultSet.getString("name"));
+	            schools.add(school);
+	        }
+	    } catch (Exception e) {
+	        throw e;
+	    } finally {
+	        if (resultSet != null) try { resultSet.close(); } catch (SQLException ignore) {}
+	        if (statement != null) try { statement.close(); } catch (SQLException ignore) {}
+	        if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
+	    }
+
+	    return schools;
+	}
+
+
 }
