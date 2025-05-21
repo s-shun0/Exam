@@ -1,11 +1,7 @@
 package scoremanager.main;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import bean.Subject;
 import bean.Teacher;
@@ -13,42 +9,29 @@ import dao.SubjectDao;
 import tool.Action;
 
 public class SubjectUpdateExecuteAction extends Action {
-    @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        request.setCharacterEncoding("UTF-8");
+	@Override
+	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// 編碼設定
+		req.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession();
-        Teacher teacher = (Teacher) session.getAttribute("user");
+		// 取得表單資料
+		String cd = req.getParameter("cd");
+		String name = req.getParameter("name");
 
-        String cd = request.getParameter("cd");
-        String name = request.getParameter("name");
+		// 取得登入中使用者
+		Teacher teacher = (Teacher) req.getSession().getAttribute("user");
 
-        Map<String, String> errors = new HashMap<>();
+		// 設定科目物件
+		Subject subject = new Subject();
+		subject.setCd(cd);
+		subject.setName(name);
+		subject.setSchool(teacher.getSchool());
 
-        if (name == null || name.isEmpty()) {
-            errors.put("name", "科目名を入力してください");
-        }
+		// 更新處理
+		SubjectDao dao = new SubjectDao();
+		dao.save(subject);  // save 方法會根據是否存在自動執行更新
 
-        if (!errors.isEmpty()) {
-            Subject subject = new Subject();
-            subject.setCd(cd);
-            subject.setName(name);
-            subject.setSchool(teacher.getSchool());
-
-            request.setAttribute("subject", subject);
-            request.setAttribute("errors", errors);
-            request.getRequestDispatcher("subject_update.jsp").forward(request, response);
-            return;
-        }
-
-        Subject subject = new Subject();
-        subject.setCd(cd);
-        subject.setName(name);
-        subject.setSchool(teacher.getSchool());
-
-        SubjectDao sDao = new SubjectDao();
-        sDao.save(subject);
-
-        request.getRequestDispatcher("subject_update_done.jsp").forward(request, response);
-    }
+		// 成功畫面轉導
+		req.getRequestDispatcher("subject_update_done.jsp").forward(req, res);
+	}
 }
